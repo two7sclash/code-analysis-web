@@ -44,12 +44,18 @@
      add in a build step if you wish. This is NOT strictly required.
 
    -->
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
-    <head>
-        <title>Single Page Application</title>
+<!doctype html>
+<html lang="en">
 
-        <style>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Single Page Application</title>
+
+    <link rel="stylesheet" href="css/foundation.css">
+    <link rel="stylesheet" href="css/app.css">
+    <style>
         body {
             margin: 0px;
             padding: 0px;
@@ -69,231 +75,26 @@
             width: 100%;
             border: 1px solid black;
         }
-        </style>
-    </head>
-    <body>
-        <!-- Container for our application -->
-        <div id="app"></div>
 
+        em {
 
-        <!-- 3rd Party Scripts -->
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.14.7/react.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.14.7/react-dom.js"></script>
-
-
-        <!-- Our Application Logic -->
-        <script>
-
-        /*==================================================
-
-           API
-
-         ***************************************************/
-
-        /**
-         * Get the data from the namegame endpoint.
-         *
-         * The data comes back in the format:
-         *
-         *    [
-         *        { name: 'Viju Legard', url: '...' },
-         *        { name: 'Matt Seibert', url: '...' },
-         *        ...
-         *    ]
-         */
-        function getPersonList() {
-            return new Promise((resolve, reject) => {
-                fetch('http://api.namegame.willowtreemobile.com/').then(function(response) {
-                    if (response.status !== 200) {
-                        reject(new Error("Error!"));
-                    }
-
-                    response.json().then((imageList) => {
-                        resolve(imageList);
-                    });
-                });
-            });
+          color: #FF4136;
         }
+    </style>
+</head>
+
+<body>
+    <!-- Container for our application -->
+    <div id="app"></div>
 
 
-        /*==================================================
-
-           DATA TRANSFORMS
-
-         ***************************************************/
-
-
-        function getLastName(fullName) {
-            return fullName.match(/\w+/g)[1];
-        }
-
-        const getFirstName = (fullName) => {
-            return fullName.match(/\w+/g)[0];
-        };
-
-        /**
-         * Fisher-Yates shuffle
-         */
-        function shuffleList(list) {
-            // Make a copy & don't mutate the passed in list
-            let result = list.slice(1);
-
-            let tmp, j, i = list.length - 1
-
-            for (; i > 0; i -= 1) {
-                j = Math.floor(Math.random() * (i + 1));
-                tmp = list[i];
-                list[i] = list[j];
-                list[j] = tmp;
-            }
-
-            return result;
-        }
+    <!-- 3rd Party Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.14.7/react.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.14.7/react-dom.js"></script>
+    <script src="js/app.js"></script>
 
 
-        /**
-         * Remove any people that do not have the name we are
-         * searching for.
-         */
-        function filterByName(searchForName, personList) {
-            return personList.filter((person) => {
-                return person.name === searchForName;
-            });
-        }
 
+</body>
 
-        /**
-         * Takes in a property of an object list, e.g. "name" below
-         *
-         *    people = [{ name: 'Sam' }, { name: 'Jon' }, { name: 'Kevin' }]
-         *
-         * And returns a function that will sort that list, e.g.
-         *
-         *    const sortPeopleByName = sortObjListByProp('name');
-         *    const sortedPeople = sortPeopleByName(people);
-         *
-         *  We now have:
-         *
-         *    console.log(sortedPeople)
-         *    > [{ name: 'Jon' }, { name: 'Kevin' }, { name: 'Sam' }]
-         *
-         */
-        function sortObjListByProp(prop) {
-            return function(objList) {
-                // Make a copy & don't mutate the passed in list
-                let result = objList.slice(1);
-
-                result.sort((a, b) => {
-                    if (a[prop] < b[prop]) {
-                        return -1;
-                    }
-
-                    if (a[prop] > b[prop]) {
-                        return 1;
-                    }
-
-                    return 1;
-                });
-
-                return result;
-            };
-        }
-
-        const sortByFirstName = sortObjListByProp('name');
-
-        const sortByLastName = (personList) => sortByFirstName(personList).reverse();
-
-
-        /*==================================================
-
-           VIEW (React)
-
-         ***************************************************/
-
-        const Search = (props) => React.DOM.input({
-            type: 'input',
-            onChange: props.onChange
-        });
-
-        const Thumbnail = (props) => React.DOM.img({
-            className: 'image',
-            src: props.src
-        });
-
-        const ListRow = (props) => React.DOM.tr({ key: props.person.name }, [
-            React.DOM.td({ key: 'thumb' }, React.createElement(Thumbnail, { src: props.person.url })),
-            React.DOM.td({ key: 'first' }, null, getFirstName(props.person.name)),
-            React.DOM.td({ key: 'last' }, null, getLastName(props.person.name)),
-        ]);
-
-        const ListContainer = (props) => React.DOM.table({ className: 'list-container' }, [
-            React.DOM.thead({ key: 'thead' }, React.DOM.tr({}, [
-                React.DOM.th({ key: 'thumb-h' }, null, 'Thumbnail'),
-                React.DOM.th({ key: 'first-h' }, null, 'First Name'),
-                React.DOM.th({ key: 'last-h' }, null, 'Last Name')
-            ])),
-            React.DOM.tbody({ key: 'tbody' }, props.personList.map((person, i) =>
-                React.createElement(ListRow, { key: `person-${i}`, person })))
-        ]);
-
-        const App = React.createClass({
-            getInitialState() {
-                return {
-                    personList: [],
-                    visiblePersonList: []
-                };
-            },
-
-            componentDidMount() {
-                getPersonList().then((personList) =>
-                    this.setState({
-                        personList,
-                        visiblePersonList: personList
-                    }));
-            },
-
-            _shuffleList() {
-                this.setState({
-                    visiblePersonList: shuffleList(this.state.personList)
-                });
-            },
-
-            _sortByFirst() {
-                this.setState({
-                    visiblePersonList: sortByFirstName(this.state.personList)
-                });
-            },
-
-            _sortByLast() {
-                this.setState({
-                    visiblePersonList: sortByLastName(this.state.personList)
-                });
-            },
-
-            _onSearch(e) {
-                this.setState({
-                    visiblePersonList: filterByName(e.target.value, this.state.personList)
-                });
-            },
-
-            render() {
-                const { visiblePersonList } = this.state;
-
-                return React.DOM.div({ className: 'app-container' }, [
-                    React.createElement(Search, { key: 'search', onChange: this._onSearch }),
-                    React.DOM.button({ key: 'shuffle', onClick: this._shuffleList }, null, 'Shuffle'),
-                    React.DOM.button({ key: 'sort-first', onClick: this._sortByFirst }, null, 'Sort (First Name)'),
-                    React.DOM.button({ key: 'sort-last', onClick: this._sortByLast }, null, 'Sort (Last Name)'),
-                    React.createElement(ListContainer, { key: 'list', personList: visiblePersonList })
-                ]);
-            }
-        });
-
-        ReactDOM.render(
-            React.createElement(App),
-            document.getElementById('app')
-        );
-
-        </script>
-    </body>
 </html>

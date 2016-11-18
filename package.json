@@ -1,0 +1,36 @@
+{
+  "name": "code-analysis-web",
+  "version": "1.0.0",
+  "description": "See comments in `index.html` for instructions.",
+  "main": "index.js",
+  "dependencies": {
+    "functional-pipeline": "^0.4.1",
+    "fuzzy": "^0.1.3",
+    "lodash": "^4.17.2",
+    "react": "^15.4.0",
+    "react-dom": "^15.4.0"
+  },
+  "devDependencies": {
+    "babel-preset-react": "^6.16.0",
+    "babelify": "^7.3.0",
+    "browserfy": "^1.0.0",
+    "uglify": "^0.1.5"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "browserify -t [ babelify --presets [ react ] ] src/main.js -o build/app.js",
+    "client": "http-server -p 8089 -s",
+    "uglify": "uglifyjs -c -v -o build/app.min.js build/app.js",
+    "onchange-app": "onchange src/main.js -- npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/two7sclash/code-analysis-web.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/two7sclash/code-analysis-web/issues"
+  },
+  "homepage": "https://github.com/two7sclash/code-analysis-web#readme"
+}

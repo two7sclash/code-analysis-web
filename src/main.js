@@ -1,6 +1,11 @@
-var fuzzy = require('fuzzy'),
-_ = require('lodash'),
-fp = require('functional-pipeline');
+
+
+let fuzzy = require('fuzzy'),
+_ = require('lodash');
+//fp = require('functional-pipeline');
+
+
+
 /*==================================================
 
 API
@@ -241,21 +246,23 @@ const App = React.createClass({
         const {visiblePersonList} = this.state;
 
         return React.DOM.div({
-            className: 'app-container'
+            className: 'row'
         }, [
             React.createElement(Search, {
                 key: 'search',
                 onChange: this._onSearch
             }),
-            React.DOM.button({
+            ReactBootstrap.Button({
                 key: 'shuffle',
+                bsStyle: "secondary",
                 onClick: this._shuffleList
             }, null, 'Shuffle'),
-            React.DOM.button({
+            ReactBootstrap.Button({
                 key: 'sort-first',
+                bsStyle: "secondary",
                 onClick: this._sortByFirst
             }, null, 'Sort (First Name)'),
-            React.DOM.button({
+             ReactBootstrap.Button({
                 key: 'sort-last',
                 onClick: this._sortByLast
             }, null, 'Sort (Last Name)'),
